@@ -43,88 +43,73 @@ Public Class Math
     ''' <summary>
     ''' Extracts the mantissa and exponent values from a given value expressed 
     ''' in engineering notation. Engineering notation rules state that the 
-    ''' mantissa must be a value from 1-999 and the exponent must be 0 or a 
+    ''' mantissa must be a value from 1-999 and the power of 10 exponent must be 0 or a 
     ''' multiple of 3.
     ''' </summary>
     ''' <param name="value@"></param>
-    ''' <returns></returns>
-    Public Shared Function EngineeringNotationValues(value@) As (mantisss@, exponent%)
+    ''' <returns>Returns a tuple containing the mantissa and the power of 10 exponent</returns>
+    Public Shared Function EngineeringNotationValues(value@) As (mantissa@, exponent%)
+        'A 0 value means nothing to do
         If value <> 0 Then
-            'use built in function to get scientific notation string do most of the work
+            'Use built in function to get scientific notation string do most of the work
             Dim _val() As String = Split(value.ToString("e"), "e")
-            Dim exponent As Integer = CInt(_val(1))
-            Dim mantissa As Decimal = CDec(_val(0))
-
+            Dim mantissa@ = CDec(_val(0))
+            Dim exponent% = CInt(_val(1))
+            Dim result = (mantissa, exponent)
             'Shift decimal point and decrement exponent until a multiple of 3
-            Do While exponent Mod 3 <> 0
-                exponent -= 1
-                mantissa *= 10
+            Do While result.exponent Mod 3 <> 0
+                result.exponent -= 1
+                result.mantissa *= 10
             Loop
-
-            Return (mantissa, exponent)
+            Return result
         Else
             Return (0, 0)
         End If
     End Function
 
-    Private Shared Function metricPrefix(num As String) As String
-        Dim can() As String
-        If InStr(num, "e") > 0 Then
-            can = Split(num, "e")
-            Select Case can(1)
-                Case "+9"
-                    can(1) = "G"
-                Case "+6"
-                    can(1) = "M"
-                Case "+3"
-                    can(1) = "k"
-                Case "-3"
-                    can(1) = "m"
-                Case "-6"
-                    can(1) = ChrW(&HB5)'TODO use/verify UTF-8
-                Case "-9"
-                    can(1) = "n"
-                Case "-12"
-                    can(1) = "p"
-            End Select
-        Else
-            ReDim can(1)
-            can(1) = ""
-            can(0) = num
-        End If
-        Return can(1)
-    End Function
-
-    Private Shared Function fix(mantissa As String) As String
-        Dim temp() As String = Split(mantissa, ".")
-        If Len(mantissa) > 6 Then
-            Select Case Len(temp(0))
-                Case 1
-                    temp(1) = Left(temp(1), 4)
-                Case 2
-                    temp(1) = Left(temp(1), 3)
-                Case 3
-                    temp(1) = Left(temp(1), 2)
-                Case Else
-            End Select
-
-        End If
-        Return $"{temp(0)}.{temp(1)}"
+    ''' <summary>
+    ''' returns the metric prefix for a given engineering notation exponent. 
+    ''' returns e[exponent] if metric unit not determined.
+    ''' </summary>
+    ''' <param name="exponent"></param>
+    ''' <returns></returns>
+    Private Shared Function metricPrefix(exponent As Integer) As String
+        Select Case exponent
+            Case 9
+                Return "G"
+            Case 6
+                Return "M"
+            Case 3
+                Return "k"
+            Case 0
+                Return ""
+            Case -3
+                Return "m"
+            Case -6
+                Return ChrW(&HB5)'TODO use/verify UTF-8 0x00b5
+            Case -9
+                Return "n"
+            Case -12
+                Return "p"
+            Case Else
+                Return $"e{exponent}"
+        End Select
     End Function
 
     ''' <summary>
-    ''' Converts a value to Engineering notation and determines the metric prefix for the SI unit'
+    ''' Converts a value to Engineering Notation and determines the metric prefix for the SI unit'
     ''' </summary>
     ''' <param name="value">numerical value</param>
     ''' <param name="SIUnit">SI Unit symbol</param>
     ''' <returns></returns>
-    Public Shared Function EngineeringNotationMetricUnit(value As Double, SIUnit As String) As String() 'returns number in engineering format with base unit
-        Dim _EngineeringNotationMetricUnit(3) As String
-        _EngineeringNotationMetricUnit(0) = CEngNotation(value)
-        _EngineeringNotationMetricUnit(1) = metricPrefix(_EngineeringNotationMetricUnit(0))
-        _EngineeringNotationMetricUnit(2) = SIUnit
-        '_EngineeringNotationMetricUnit(3) = fix(_EngineeringNotationMetricUnit(0)) & _EngineeringNotationMetricUnit(1) & _EngineeringNotationMetricUnit(2) 'TODO
-        Return _EngineeringNotationMetricUnit
+    Public Shared Function EngineeringNotationMetricUnit(value As Decimal, SIUnit As String) As String() 'returns number in engineering format with base unit
+        Dim eng(3) As String
+        Dim _values = EngineeringNotationValues(value)
+        eng(0) = CStr(_values.mantissa)
+        eng(1) = metricPrefix(_values.exponent)
+        eng(2) = SIUnit
+        eng(3) = $"{_values.mantissa.ToString("#.###")}{ eng(1)}{SIUnit}"
+        Return eng
     End Function
 
 End Class
