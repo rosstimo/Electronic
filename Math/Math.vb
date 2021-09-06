@@ -40,33 +40,31 @@ Public Class Math
         Return result
     End Function
 
+    ''' <summary>
+    ''' Extracts the mantissa and exponent values from a given value expressed 
+    ''' in engineering notation. Engineering notation rules state that the 
+    ''' mantissa must be a value from 1-999 and the exponent must be 0 or a 
+    ''' multiple of 3.
+    ''' </summary>
+    ''' <param name="value@"></param>
+    ''' <returns></returns>
+    Public Shared Function EngineeringNotationValues(value@) As (mantisss@, exponent%)
+        If value <> 0 Then
+            'use built in function to get scientific notation string do most of the work
+            Dim _val() As String = Split(value.ToString("e"), "e")
+            Dim exponent As Integer = CInt(_val(1))
+            Dim mantissa As Decimal = CDec(_val(0))
 
-    Public Shared Function CEngNotation(doubleValue As Double) As String
-        'Inspired by code found at: http://mibifici.blogspot.com/2012/02/engineering-notation-in-vbavb6.html
-        Dim _doubleValue As Double = doubleValue
-        Dim mantissa As Double
-        Dim exponent As Long
-        Dim str As String = "0"
+            'Shift decimal point and decrement exponent until a multiple of 3
+            Do While exponent Mod 3 <> 0
+                exponent -= 1
+                mantissa *= 10
+            Loop
 
-
-        If _doubleValue <> 0 Then
-
-            exponent = 3 * CLng((System.Math.Log10(System.Math.Abs(_doubleValue)) / System.Math.Log10(1000)))   ' --- calculate Exponent...
-            '     (Converts: log-base-e to log-base-10)
-            mantissa = _doubleValue / (10 ^ exponent)                     ' --- calculate Mantissa.
-
-            If mantissa < 1 Then                        ' --- if Mantissa <1 then...
-                exponent = exponent - 3                        ' --- ...adjust Exponent and...
-                mantissa = _doubleValue / (10 ^ exponent)                 ' --- ...recalculate Mantissa.
-            End If
-            ' --- Create output string (special treatment when Exponent of zero; don't append "e")
-            str = mantissa & CStr(If(exponent <> 0, "e" & CStr(If(exponent > 0, "+", "")) & exponent, ""))
-
+            Return (mantissa, exponent)
+        Else
+            Return (0, 0)
         End If
-
-        Return str
-
-
     End Function
 
     Private Shared Function metricPrefix(num As String) As String
@@ -96,7 +94,6 @@ Public Class Math
         End If
         Return can(1)
     End Function
-
 
     Private Shared Function fix(mantissa As String) As String
         Dim temp() As String = Split(mantissa, ".")
