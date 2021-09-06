@@ -41,34 +41,26 @@ Public Class Math
     End Function
 
 
-    'Format
-    Private Shared Function CEngNotation(doubleValue As Double) As String
-        'found this code at: http://mibifici.blogspot.com/2012/02/engineering-notation-in-vbavb6.html
-        Dim x As Double    ' --- Original Double (Floating-point)
-        Dim y As Double    ' --- Mantissa
-        Dim n As Long      ' --- Exponent
+    Public Shared Function CEngNotation(doubleValue As Double) As String
+        'Inspired by code found at: http://mibifici.blogspot.com/2012/02/engineering-notation-in-vbavb6.html
+        Dim _doubleValue As Double = doubleValue
+        Dim mantissa As Double
+        Dim exponent As Long
         Dim str As String = "0"
-        Dim sign As String
 
-        x = doubleValue
-        If x <> 0 Then
 
-            If x < 0 Then
-                ' --- x *must* be positive for log function to work
-                x = x * -1
-                sign = "-"    ' --- we need to preserve the sign for output string
-            End If
+        If _doubleValue <> 0 Then
 
-            n = 3 * CLng((System.Math.Log10(x) / System.Math.Log10(1000)))   ' --- calculate Exponent...
+            exponent = 3 * CLng((System.Math.Log10(System.Math.Abs(_doubleValue)) / System.Math.Log10(1000)))   ' --- calculate Exponent...
             '     (Converts: log-base-e to log-base-10)
-            y = x / (10 ^ n)                     ' --- calculate Mantissa.
+            mantissa = _doubleValue / (10 ^ exponent)                     ' --- calculate Mantissa.
 
-            If y < 1 Then                        ' --- if Mantissa <1 then...
-                n = n - 3                        ' --- ...adjust Exponent and...
-                y = x / (10 ^ n)                 ' --- ...recalculate Mantissa.
+            If mantissa < 1 Then                        ' --- if Mantissa <1 then...
+                exponent = exponent - 3                        ' --- ...adjust Exponent and...
+                mantissa = _doubleValue / (10 ^ exponent)                 ' --- ...recalculate Mantissa.
             End If
             ' --- Create output string (special treatment when Exponent of zero; don't append "e")
-            str = sign & y & CStr(If(n <> 0, "e" & CStr(If(n > 0, "+", "")) & n, ""))
+            str = mantissa & CStr(If(exponent <> 0, "e" & CStr(If(exponent > 0, "+", "")) & exponent, ""))
 
         End If
 
@@ -117,8 +109,8 @@ Public Class Math
                 Case 3
                     temp(1) = Left(temp(1), 2)
                 Case Else
-
             End Select
+
         End If
         Return $"{temp(0)}.{temp(1)}"
     End Function
@@ -134,7 +126,7 @@ Public Class Math
         _EngineeringNotationMetricUnit(0) = CEngNotation(value)
         _EngineeringNotationMetricUnit(1) = metricPrefix(_EngineeringNotationMetricUnit(0))
         _EngineeringNotationMetricUnit(2) = SIUnit
-        _EngineeringNotationMetricUnit(3) = fix(_EngineeringNotationMetricUnit(0)) & _EngineeringNotationMetricUnit(1) & _EngineeringNotationMetricUnit(2) 'TODO
+        '_EngineeringNotationMetricUnit(3) = fix(_EngineeringNotationMetricUnit(0)) & _EngineeringNotationMetricUnit(1) & _EngineeringNotationMetricUnit(2) 'TODO
         Return _EngineeringNotationMetricUnit
     End Function
 
