@@ -38,7 +38,7 @@
             For i = UBound(multipliers) To 0 Step -1
                 If 10 ^ multipliers(i) <= value Then
                     For j = UBound(commonValues) To 0 Step -1
-                        Console.WriteLine(commonValues(j) * 10 ^ multipliers(i))
+                        'Console.WriteLine(commonValues(j) * 10 ^ multipliers(i))
                         If commonValues(j) * 10 ^ multipliers(i) <= value Then
                             _commonValue = commonValues(j) * 10 ^ multipliers(i)
                             Exit For
@@ -59,6 +59,23 @@
 
         Public Shared Function valueFormatted() As String
             Return ""
+        End Function
+
+        Public Overloads Shared Function Parallel(branchOne@, branchTwo@) As Decimal
+            Return CDec(branchOne ^ -1 + branchTwo ^ -1) ^ -1
+        End Function
+
+        Public Overloads Shared Function Parallel(branches() As Decimal) As Decimal
+            Dim result@ = branches(0)
+            Try
+                For i = 1 To UBound(branches)
+                    result = CDec(result ^ -1 + branches(i) ^ -1) ^ -1
+                Next
+            Catch
+                'most likely a singe element array
+                'will simply return the value of branches(0)
+            End Try
+            Return result
         End Function
 
     End Class
@@ -117,6 +134,20 @@
 
     End Class
 
+    Public Class Capacitor
+        Public value@, tolerance@
+        Public Shared Function F(R@, C@) As Decimal
+            Return CDec((2 * System.Math.PI * R * C) ^ -1)
+        End Function
+
+        Public Shared Function C(Xc@, f@) As Decimal
+            Return (2 * System.Math.PI * Xc * f) ^ -1
+        End Function
+
+        Public Function Xc(f@, C@) As Decimal
+            Return CDec((2 * System.Math.PI * C * f) ^ -1)
+        End Function
+    End Class
 
 
 

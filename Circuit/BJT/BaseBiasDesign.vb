@@ -1,6 +1,60 @@
-﻿Public Class BaseBiasDesign
+﻿Imports Electronics.BJT.NPN
+Imports Electronics.Components.Resistor
 
-    Public VCC%, VRC@, VCE@, VRE@, IC@, Beta%
+Public Class BaseBiasDesign
+
+    Private _IC As Decimal
+    Public Property IC() As Decimal
+        Get
+            Return _IC
+        End Get
+        Set(ByVal value As Decimal)
+            _IC = value
+        End Set
+    End Property
+
+    Private _RC As Decimal
+    Public Property RC() As Decimal
+        Get
+            Return _RC
+        End Get
+        Set(ByVal value As Decimal)
+            _RC = value
+        End Set
+    End Property
+
+    Private _VRC As Decimal
+    Public Property VRC() As Decimal
+        Get
+            Return _VRC
+        End Get
+        Set(ByVal value As Decimal)
+            _VRC = value
+        End Set
+    End Property
+
+    Private _IB As Decimal
+    Public Property IB() As Decimal
+        Get
+            Return _IB
+        End Get
+        Set(ByVal value As Decimal)
+            _IB = value
+        End Set
+    End Property
+
+    Private _IE As Decimal
+    Public Property IE() As Decimal
+        Get
+            Return _IE
+        End Get
+        Set(ByVal value As Decimal)
+            _IE = value
+        End Set
+    End Property
+
+
+    Public VCC%, VCE@, VRE@, Beta%
     Const VBE = 0.7@
 
     Public Sub New(
@@ -20,32 +74,39 @@
 
     End Sub
 
-    Function IB() As Decimal
+
+    Function SetIB() As Decimal
         Return Me.IC / Me.Beta
     End Function
 
-    Function IE() As Decimal
+    Function SetIE() As Decimal
         Return Me.IB * (Me.Beta + 1)
     End Function
 
-    Function RC() As Decimal
-        Return Me.VRC / Me.IC
+    Function SetRC() As Decimal
+        Dim _RC@ = CommonValue(Me.VRC / Me.IC)
+        Return _RC
     End Function
 
-    Function RE() As Decimal
-        Return Me.VRE / Me.Beta
+    Function SetRE() As Decimal
+        Dim _RE = CommonValue(Me.VRE / Me.Beta)
+        Return _RE
     End Function
 
-    Function VRB() As Decimal
+    Function SetVRB() As Decimal
         Return Me.VCC - Me.VBE - Me.VRE
     End Function
 
-    Function RB() As Decimal
-        Return Me.VRB / Me.IB
-    End Function
+    'Function SetRB() As Decimal
+    '    Dim _RB = CommonValue(Me.VRB / Me.IB)
+    '    Return _RB
+    'End Function
 
-    Sub Design()
-        Me.RC()
-    End Sub
+    'Sub Design()
+    '    Me.SetRC()
+    '    Me.SetRE()
+    '    Me.SetRB()
+    '    Dim verify As New BaseBias(Me.VCC, Me.RB(), Me.RC, Me.RE, Me.Beta)
+    'End Sub
 
 End Class

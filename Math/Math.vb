@@ -21,8 +21,6 @@ Public Class Math
         Return CInt(System.Math.Floor(Rnd() * (_max + 1))) + min
     End Function
 
-
-
     '''<summary>
     '''solves two simultaneous equations: a1 + b1 = k1,  a2 + b2 = k2 
     '''</summary>
@@ -38,6 +36,22 @@ Public Class Math
         numerator = (a1 * k2) - (k1 * a2)
         result.bTermResult = (numerator / denominator)
         Return result
+    End Function
+
+    Public Function vdB(result@, Optional reference@ = 0.001@) As Decimal
+        Return CDec(20 * System.Math.Log10(reference / result))
+    End Function
+
+    Public Function idB(result@, reference@) As Decimal
+        Return CDec(20 * System.Math.Log10(reference / result))
+    End Function
+
+    Public Function zdB(result@, reference@) As Decimal
+        Return CDec(20 * System.Math.Log10(reference / result))
+    End Function
+
+    Public Function pdB(result@, Optional reference@ = 0.001@) As Decimal
+        Return CDec(10 * System.Math.Log10(reference / result))
     End Function
 
     ''' <summary>
@@ -111,6 +125,17 @@ Public Class Math
         eng(3) = $"{_values.mantissa.ToString("#.###")}{ eng(1)}{SIUnit}"
         Return eng
     End Function
+
+    ''' <summary>
+    ''' Converts a value to engineering notation with metric prefix for the SI unit'
+    ''' </summary>
+    ''' <param name="value">numerical value</param>
+    ''' <param name="SIUnit">SI Unit symbol</param>
+    ''' <returns>returns Engineering formatted string</returns>
+    Public Shared Function Pretty(value As Decimal, SIUnit As String) As String
+        Return EngineeringNotationMetricUnit(value, SIUnit)(3)
+    End Function
+
 
 End Class
 
