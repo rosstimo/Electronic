@@ -89,13 +89,13 @@ Namespace JFET
                     CommonSource.RL = 10000000
                 End If
                 Me.CommonSource.rSwamp = Me.RS1
-                Me.CommonSource.rPrimeS = CDec(Me.VGSOff / (Me.VGS * System.Math.Sqrt(Me.IDSS * Me.ID)))
+                Me.CommonSource.rPrimeS = CDec((-1 * Me.VGSOff) / (2 * System.Math.Sqrt(Me.IDSS * Me.ID)))
                 Me.CommonSource.zin = Me.RG
                 Me.CommonSource.zout = Me.RD
                 Me.CommonSource.rLAC = CDec((Me.RD ^ -1 + Me.CommonSource.RL ^ -1) ^ -1)
                 Me.CommonSource.vinMax = Me.ID * (Me.CommonSource.rPrimeS + Me.CommonSource.rSwamp)
                 Me.CommonSource.voutMax = Me.ID * Me.CommonSource.rLAC
-                Me.CommonSource.Av = Me.CommonSource.voutMax / Me.CommonSource.vinMax
+                Me.CommonSource.Av = (Me.CommonSource.voutMax / Me.CommonSource.vinMax) * -1
                 Me.CommonSource.Ai = Me.CommonSource.Av * (Me.CommonSource.zin / Me.CommonSource.RL)
                 Me.CommonSource.Ap = Me.CommonSource.Av * Me.CommonSource.Ai
                 'Me.CommonSource.idSatAC = CDec(Me.VDS / (Me.RD ^ -1 + Me.CommonSource.RL ^ -1) ^ -1) + Me.ID
@@ -109,7 +109,7 @@ Namespace JFET
                     CommonDrain.RL = 10000000
                 End If
                 Me.CommonDrain.rSwamp = Me.RS1
-                Me.CommonDrain.rPrimeS = CDec(Me.VGSOff / (Me.VGS * System.Math.Sqrt(Me.IDSS * Me.ID)))
+                Me.CommonDrain.rPrimeS = CDec((-1 * Me.VGSOff) / (2 * System.Math.Sqrt(Me.IDSS * Me.ID)))
                 Me.CommonDrain.zin = Me.RG
                 Me.CommonDrain.zout = CDec((Me.RS ^ -1 + Me.CommonDrain.rPrimeS ^ -1) ^ -1) 'TODO verify
                 Me.CommonDrain.rLAC = CDec((Me.RS ^ -1 + Me.CommonDrain.RL ^ -1) ^ -1)
@@ -128,7 +128,7 @@ Namespace JFET
                     CommonGate.RL = 10000000
                 End If
                 Me.CommonGate.rSwamp = Me.RS1
-                Me.CommonGate.rPrimeS = CDec(Me.VGSOff / (Me.VGS * System.Math.Sqrt(Me.IDSS * Me.ID)))
+                Me.CommonGate.rPrimeS = CDec((-1 * Me.VGSOff) / (2 * System.Math.Sqrt(Me.IDSS * Me.ID)))
                 Me.CommonGate.zin = CDec((Me.RS ^ -1 + (Me.CommonGate.rSwamp + Me.CommonGate.rPrimeS) ^ -1) ^ -1) 'TODO verify
                 Me.CommonGate.zout = Me.RD
                 Me.CommonGate.rLAC = CDec((Me.RD ^ -1 + Me.CommonGate.RL ^ -1) ^ -1)
@@ -311,17 +311,33 @@ Namespace JFET
 
 
         End Class
-
-        Public Class CommonSource
+        Public Class Amplifier
             Public RL%, rgen%, rSwamp%, zin@, zout@, rLAC@, Av@, Ai@, Ap@, rPrimeS@, voutMax@, vinMax@, idSatAC@, vdsCutAC@
+
+            Public Function AvdB() As Decimal 'CE, CB, CC
+                Return CDec(20 * System.Math.Log10(System.Math.Abs(Me.Av)))
+            End Function
+            Public Function AidB() As Decimal 'CE, CB, CC
+                Return CDec(20 * System.Math.Log10(System.Math.Abs(Me.Ai)))
+            End Function
+            Public Function ApdB() As Decimal 'CE, CB, CC
+                Return CDec(10 * System.Math.Log10(Me.Ap))
+            End Function
+
+        End Class
+        Public Class CommonSource
+            Inherits Amplifier
+            'Public RL%, rgen%, rSwamp%, zin@, zout@, rLAC@, Av@, Ai@, Ap@, rPrimeS@, voutMax@, vinMax@, idSatAC@, vdsCutAC@
         End Class
 
         Public Class CommonDrain
-            Public RL%, rgen%, rSwamp%, zin@, zout@, rLAC@, Av@, Ai@, Ap@, rPrimeS@, voutMax@, vinMax@, idSatAC@, vdsCutAC@
+            Inherits Amplifier
+            'Public RL%, rgen%, rSwamp%, zin@, zout@, rLAC@, Av@, Ai@, Ap@, rPrimeS@, voutMax@, vinMax@, idSatAC@, vdsCutAC@
         End Class
 
         Public Class CommonGate
-            Public RL%, rgen%, rSwamp%, zin@, zout@, rLAC@, Av@, Ai@, Ap@, rPrimeS@, voutMax@, vinMax@, idSatAC@, vdsCutAC@
+            Inherits Amplifier
+            'Public RL%, rgen%, rSwamp%, zin@, zout@, rLAC@, Av@, Ai@, Ap@, rPrimeS@, voutMax@, vinMax@, idSatAC@, vdsCutAC@
         End Class
 
 

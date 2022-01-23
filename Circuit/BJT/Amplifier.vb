@@ -17,11 +17,6 @@
         Return CDec(10 * System.Math.Log10(Me.Ap))
     End Function
 
-
-
-
-
-
 End Class
 
 Public Class CommonCollector
