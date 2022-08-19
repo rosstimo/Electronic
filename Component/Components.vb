@@ -82,11 +82,11 @@
 
     Public Class ZenerDiode
         Public Shared Sub junkx()
-            Dim zeners As String() = System.IO.File.ReadAllLines("C:\Users\rosstimo\OneDrive\Sync\github\AMP\eleclib\Resources\zener.csv") 'System.IO.File.ReadAllLines(My.Resources.Zener)
+            'Dim zeners As String() = System.IO.File.ReadAllLines("C:\Users\rosstimo\OneDrive\Sync\github\AMP\eleclib\Resources\zener.csv") 'System.IO.File.ReadAllLines(My.Resources.Zener)
 
-            For Each str As String In SortQuery(zeners, 2)
-                Console.WriteLine(str.PadRight(6))
-            Next
+            'For Each str As String In SortQuery(zeners, 2)
+            'Console.WriteLine(str.PadRight(6))
+            'Next
 
         End Sub
 
@@ -110,7 +110,7 @@
         Public Shared Sub junk()
             Using MyReader As New Microsoft.VisualBasic.
                       FileIO.TextFieldParser(
-                        "C:\Users\rosstimo\OneDrive\Sync\github\AMP\eleclib\Resources\zener.csv")
+                        "C:\Users\rosstimo\OneDrive\Sync\github\AMP\Electronic\Resources\zener.csv")
                 MyReader.TextFieldType = FileIO.FieldType.Delimited
                 MyReader.SetDelimiters(",")
                 Dim currentRow As String()

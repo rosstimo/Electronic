@@ -10,6 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="28.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\Zener.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
